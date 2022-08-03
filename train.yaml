@@ -1,0 +1,35 @@
+data:
+  _target_: src.load.LoadTimeSeriesDataset
+  batch_size: 128
+  categorical_cols: [ ]
+  use_cols: ["metric_value",'timestamp']
+  index_col: "timestamp"
+  data_name: 'cpu_load'
+  data_path: "/root/dataset/iaas_data/uni.csv"
+  seq_length: 32
+  train_size: 0.8
+
+model:
+  _target_: src.load.LoadModel
+  model_name: 'TranAD'
+  data_name: ${data.data_name}
+  seq_len: ${data.seq_length}
+  dim: 1
+  lr: 1e-4
+  lrs_step_size: 5000
+  retrain: ${general.do_retrain}
+
+
+training:
+  max_grad_norm: 0.1
+  num_epochs: 20
+  output_size: 1
+  seq_len: ${data.seq_length}
+
+general:
+  do_eval: True
+  do_train: True
+  do_retrain: True
+  eval_during_training: True
+  logging_steps: 1000
+  output_dir: "./output"
